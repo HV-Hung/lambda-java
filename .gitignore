@@ -1,0 +1,58 @@
+# Compiled class file
+/functions/**/*.class
+
+# Log file
+/functions/**/*.log
+
+# BlueJ files
+/functions/**/*.ctxt
+
+# Mobile Tools for Java (J2ME)
+/functions/.mtj.tmp/
+
+# Package Files #
+/functions/**/*.jar
+/functions/**/*.war
+/functions/**/*.nar
+/functions/**/*.ear
+/functions/**/*.zip
+/functions/**/*.tar.gz
+/functions/**/*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+/functions/hs_err_pid*# Compiled class file
+/functions/**/*.class
+
+# Log file
+/functions/**/*.log
+
+# BlueJ files
+/functions/**/*.ctxt
+
+# Mobile Tools for Java (J2ME)
+/functions/**/*.mtj.tmp/
+
+# Package Files #
+/functions/**/*.jar
+/functions/**/*.war
+/functions/**/*.nar
+/functions/**/*.ear
+/functions/**/*.zip
+/functions/**/*.tar.gz
+/functions/**/*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+/functions/hs_err_pid*
+
+# Target directories
+/functions/**/target/
+
+# IntelliJ IDEA specific files
+/functions/**/*.idea/
+/functions/**/*.iml
+/functions/**/*.iws
+/functions/**/target/
+# IntelliJ IDEA specific files
+/functions/**/*.idea/
+/functions/**/*.iml
+/functions/**/*.iws
