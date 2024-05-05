@@ -20,6 +20,8 @@ jobs:
         id: detect
         with:
           filters: "{\"hello-world\":\"hello-world\",\"hello-world-2\":\"hello-world-2\"}"
+      - name: Echo working directory
+        run: echo ${{ steps.detect.outputs.changes }}
   package:
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.working-dir != '{}' }}
