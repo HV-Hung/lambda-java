@@ -22,6 +22,7 @@ jobs:
           filters: "{\"hello-world\":\"hello-world\",\"hello-world-2\":\"hello-world-2\"}"
   package:
     runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.working-dir != '{}' }}
     strategy:
       matrix:
         working-directory: ${{ fromJSON(needs.changes.outputs.working-dir) }}
