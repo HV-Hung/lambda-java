@@ -6,37 +6,56 @@ on:
       - 'functions/**'
 
 jobs:
-  build:
+  changes:
     runs-on: ubuntu-latest
+    name: detect-changes
+    outputs:
+      working-dir: ${{ steps.detect.outputs.changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: detect
+        with:
+          filters: "{\"hello-world\":\"hello-world\",\"hello-world-2\":\"hello-world-2\"}"
+  package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        working-directory: ${{ fromJSON(needs.changes.outputs.working-dir) }}
+      max-parallel: 1
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Echo working directory
+        run: echo ${{ matrix.working-directory }}
+    # - name: Checkout code
+    #   uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'zulu'
+    # - name: Set up JDK 17
+    #   uses: actions/setup-java@v4
+    #   with:
+    #     java-version: '17'
+    #     distribution: 'zulu'
 
-    - name: Cache Maven packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+    # - name: Cache Maven packages
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ~/.m2
+    #     key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+    #     restore-keys: ${{ runner.os }}-m2
 
-    - name: Build with Maven
-      run: |
-        for dir in $(find functions -name 'pom.xml' -printf '%h\n'); do
-          cd $dir
-          mvn package
-          cd -
-        done
+    # - name: Build with Maven
+    #   run: |
+    #     for dir in $(find functions -name 'pom.xml' -printf '%h\n'); do
+    #       cd $dir
+    #       mvn package
+    #       cd -
+    #     done
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: |
-          functions/**/target/*.jar
+    # - name: Upload artifacts
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: package
+    #     path: |
+    #       functions/**/target/*.jar
