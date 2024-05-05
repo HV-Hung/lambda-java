@@ -22,6 +22,7 @@ jobs:
         id: detect
         with:
           filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
+          base: main
       - name: Echo working directory
         run: echo ${{ steps.detect.outputs.changes }}
   package:
