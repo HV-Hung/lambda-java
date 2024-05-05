@@ -19,7 +19,7 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: detect
         with:
-          filters: "{\"hello-world\":\"hello-world\",\"hello-world-2\":\"hello-world-2\"}"
+          filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
       - name: Echo working directory
         run: echo ${{ steps.detect.outputs.changes }}
   package:
