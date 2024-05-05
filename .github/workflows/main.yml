@@ -24,7 +24,7 @@ jobs:
         run: echo ${{ steps.detect.outputs.changes }}
   package:
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.working-dir != '[]' }}
+    if: needs.changes.outputs.working-dir != '[]'
     strategy:
       matrix:
         working-directory: ${{ fromJSON(needs.changes.outputs.working-dir) }}
