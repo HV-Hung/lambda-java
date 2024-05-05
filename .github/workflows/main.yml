@@ -2,8 +2,8 @@ name: Package Java projects
 
 on:
   push:
-    branches:
-      - "!main"
+    branches-ignore:
+      - main
     paths:
       - 'functions/**'
   workflow_dispatch:
