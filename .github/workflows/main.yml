@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: List directories in functions
+        run: |
+          cd functions
+          find. -type d -print
 
       - uses: dorny/paths-filter@v3
         id: detect
