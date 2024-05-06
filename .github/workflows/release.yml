@@ -79,6 +79,8 @@ jobs:
           version: stable
       - name: Upload release access
         working-directory: ${{ env.WORK_DIR }}
+        env:
+          GH_TOKEN: ${{ secrets.GIT_HUB_API_TOKEN }}
         run: |
           gh release upload ${{ github.ref }} target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar 
 
