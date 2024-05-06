@@ -2,8 +2,8 @@ name: Package Java projects
 
 on:
   push:
-    # branches-ignore:
-    #   - main
+    branches-ignore:
+      - main
   workflow_dispatch:
 env:
   FUNCTIONS_DIR: functions
@@ -50,8 +50,8 @@ jobs:
       - name: Set up working directory
         run: |
           echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
-          
-      - name: Version
+
+      - name: Function version
         run: |
           cd $WORK_DIR
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
