@@ -60,6 +60,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
+          <minimizeJar>true</minimizeJar>
           <source>17</source>
           <target>17</target>
         </configuration>
