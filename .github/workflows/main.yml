@@ -46,7 +46,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          path: ${{ env.FUNCTIONS_DIR }}
+          sparse-checkout: ${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}
 
       - name: List files
         run: |
