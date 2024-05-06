@@ -19,7 +19,7 @@ jobs:
       
       - name: Output function list
         id: detect
-        run: echo "functions=$(ls -d functions/*/)" >> $GITHUB_OUTPUT
+        run: functions=$(find functions -maxdepth 1 -mindepth 1 -type d -print | jq -R . | jq -s . ) >> $GITHUB_OUTPUT
       # - uses: dorny/paths-filter@v3
       #   id: detect
       #   with:
