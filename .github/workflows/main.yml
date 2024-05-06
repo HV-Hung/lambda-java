@@ -5,7 +5,8 @@ on:
     branches-ignore:
       - main
   workflow_dispatch:
-
+env:
+  FUNCTIONS_DIR: functions
 jobs:
   changes:
     runs-on: ubuntu-latest
@@ -20,7 +21,7 @@ jobs:
       - name: Output function list
         id: detect
         run: |
-          functions_dirs=$(find functions -maxdepth 1 -mindepth 1 -type d -print | jq -R . | jq -s . )
+          functions_dirs=$(find $FUNCTIONS_DIR -maxdepth 1 -mindepth 1 -type d -print | cut -d'/' -f2 | jq -R . | jq -s . )
           echo functions=$functions_dirs >> $GITHUB_OUTPUT
       # - uses: dorny/paths-filter@v3
       #   id: detect
@@ -60,7 +61,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd ${{ matrix.working-directory }}
+          cd "$FUNCTIONS_DIR/${{ matrix.working-directory }}""
           mvn package
 
       - name: Upload artifacts
@@ -68,4 +69,4 @@ jobs:
         with:
           name: ${{ replace(matrix.working-directory, '/', '-') }}
           path: |
-            ${{ matrix.working-directory }}/target/*.jar
+            $FUNCTIONS_DIR/${{ matrix.working-directory }}/target/*.jar
