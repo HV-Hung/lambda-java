@@ -11,21 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     name: detect-changes
     outputs:
-      working-dir: ${{ steps.detect.outputs.changes }}
+      # working-dir: ${{ steps.detect.outputs.changes }}
+      working-dir: ${{ steps.detect.outputs.functions }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: List directories in functions
-        run: |
-          cd functions
-          find. -type d -print
-
-      - uses: dorny/paths-filter@v3
+      - name: Output function list
         id: detect
-        with:
-          filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
-          base: main
+        run: echo "::set-output name=functions::$(ls -d functions/*/)"
+      # - uses: dorny/paths-filter@v3
+      #   id: detect
+      #   with:
+      #     filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
+      #     base: main
       - name: Echo working directory
         run: echo ${{ steps.detect.outputs.changes }}
   package:
