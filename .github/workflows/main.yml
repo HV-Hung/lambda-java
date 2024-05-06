@@ -48,6 +48,8 @@ jobs:
         with:
           path: ${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}
 
+      - name: List files
+        run: ls 
       # - name: Set up JDK 17
       #   uses: actions/setup-java@v4
       #   with:
