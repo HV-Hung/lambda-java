@@ -82,4 +82,4 @@ jobs:
         with:
           name: ${{ matrix.working-directory }}
           path: |
-            ${{ env.WORK_DIR }}/target/${{ matrix.working-directory }}-${{ env.WORK_DIR }}.jar
+            ${{ env.WORK_DIR }}/target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar
