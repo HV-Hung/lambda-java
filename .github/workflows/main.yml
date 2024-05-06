@@ -49,10 +49,11 @@ jobs:
       
       - name: Prepare environment variables
         run: |
-          cd ${{ env.WORK_DIR }}
+          WORK_DIR="${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}"
+          cd $WORK_DIR
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          echo WORK_DIR="${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
+          echo "WORK_DIR=${WORK_DIR}" >> $GITHUB_ENV
       - name: Echo info
         run: |
           echo $VERSION
