@@ -44,13 +44,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Set working directory
-        run: echo "GITHUB_WORKSPACE=${{ env.GITHUB_WORKSPACE }}/${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
       - name: Prepare environment variables
         run: |
-          echo pwd
-          pwd
-          echo $GITHUB_WORKSPACE
+          echo ${{ matrix.working-directory }}
+          echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
+          VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       
         
