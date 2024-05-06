@@ -35,7 +35,7 @@ jobs:
     # if: needs.changes.outputs.working-dir != '[]'
     strategy:
       matrix:
-        working-directory: ${{ needs.changes.outputs.working-dir }}
+        working-directory: ${{ fromJSON(needs.changes.outputs.working-dir) }}
       max-parallel: 1
 
     steps:
