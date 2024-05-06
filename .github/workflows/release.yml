@@ -43,7 +43,7 @@ jobs:
       
       - name: Set up working directory
         run: |
-          echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}"
+          WORK_DIR="${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}"
           echo "WORK_DIR=${WORK_DIR}" >> $GITHUB_ENV
 
       - name: Version
@@ -83,7 +83,7 @@ jobs:
         run: |
           RELEASE=$(echo ${{ github.ref }} | cut -d'/' -f3)
           echo "RELEASE=${RELEASE}" >> $GITHUB_ENV
-          
+
       - name: Upload release access
         working-directory: ${{ env.WORK_DIR }}
         env:
