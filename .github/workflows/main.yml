@@ -61,7 +61,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd "$FUNCTIONS_DIR/${{ matrix.working-directory }}""
+          cd "$FUNCTIONS_DIR/${{ matrix.working-directory }}"
           mvn package
 
       - name: Upload artifacts
