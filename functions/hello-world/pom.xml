@@ -5,8 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.example</groupId>
-  <artifactId>lambda-test</artifactId>
-  <version>1.0.0</version>
+  <artifactId>hello-world</artifactId>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
