@@ -50,6 +50,7 @@ jobs:
           echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo $VERSION
 
       
         
