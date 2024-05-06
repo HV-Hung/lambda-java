@@ -19,7 +19,9 @@ jobs:
       
       - name: Output function list
         id: detect
-        run: echo "functions=$(find functions -maxdepth 1 -mindepth 1 -type d -print | jq -R . | jq -s . )" >> $GITHUB_OUTPUT
+        run: |
+          functions_dirs=$(find functions -maxdepth 1 -mindepth 1 -type d -print | jq -R . | jq -s . )
+          echo functions=$functions_dirs >> $GITHUB_OUTPUT
       # - uses: dorny/paths-filter@v3
       #   id: detect
       #   with:
