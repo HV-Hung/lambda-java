@@ -47,9 +47,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Prepare environment variables
+      - name: Set up working directory
         run: |
-          WORK_DIR="${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}"
+          echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
+          
+      - name: Version
+        run: |
           cd $WORK_DIR
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
@@ -59,7 +62,6 @@ jobs:
           echo $VERSION
           echo $WORK_DIR
       
-        
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
