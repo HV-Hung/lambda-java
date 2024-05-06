@@ -69,4 +69,4 @@ jobs:
         with:
           name: ${{ matrix.working-directory }}
           path: |
-            ${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}/target/${{ matrix.working-directory }}.jar
+            ${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}/target/*.jar
