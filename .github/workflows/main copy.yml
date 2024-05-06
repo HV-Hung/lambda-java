@@ -9,7 +9,7 @@ jobs:
     name: Upload artifact
     
     steps:
-      - name: create secrets files
+      - name: create secrets file
         run: |
           echo "${{ secrets.TEST_SECRET }}" > secret.txt
       - name: Upload artifacts
