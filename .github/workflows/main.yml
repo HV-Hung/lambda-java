@@ -54,9 +54,11 @@ jobs:
           cd ${{ env.WORK_DIR }}
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo WORK_DIR="${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
+      - name: Echo info
+        run: |
           echo $VERSION
           echo $WORK_DIR
-
       
         
       - name: Set up JDK 17
@@ -81,4 +83,4 @@ jobs:
         with:
           name: ${{ matrix.working-directory }}
           path: |
-            ${{ env.WORK_DIR }}/target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar
+            ${{ env.WORK_DIR }}/target/${{ matrix.working-directory }}-${{ env.WORK_DIR }}.jar
