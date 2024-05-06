@@ -43,14 +43,15 @@ jobs:
       
       - name: Set up working directory
         run: |
-          echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}" >> $GITHUB_ENV
+          echo "WORK_DIR=${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}"
+          echo "WORK_DIR=${WORK_DIR}" >> $GITHUB_ENV
 
-      - name: Function version
+      - name: Version
         run: |
           cd $WORK_DIR
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "WORK_DIR=${WORK_DIR}" >> $GITHUB_ENV
+          
       - name: Echo info
         run: |
           echo $VERSION
@@ -77,12 +78,18 @@ jobs:
         uses: sersoft-gmbh/setup-gh-cli-action@v2
         with:
           version: stable
+      
+      - name: Release
+        run: |
+          RELEASE=$(echo ${{ github.ref }} | cut -d'/' -f3)
+          echo "RELEASE=${RELEASE}" >> $GITHUB_ENV
+          
       - name: Upload release access
         working-directory: ${{ env.WORK_DIR }}
         env:
           GH_TOKEN: ${{ secrets.GIT_HUB_API_TOKEN }}
         run: |
-          gh release upload ${{ github.ref }} target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar 
+          gh release upload ${{ env.RELEASE }} target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar 
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
