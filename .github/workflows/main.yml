@@ -38,9 +38,7 @@ jobs:
       matrix:
         working-directory: ${{ fromJSON(needs.changes.outputs.working-dir) }}
       max-parallel: 1
-    env:
-      WORK_DIR: ${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}
-
+  
     steps:
       - name: "Install tools"
         shell: bash
