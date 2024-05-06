@@ -19,14 +19,14 @@ jobs:
       
       - name: Output function list
         id: detect
-        run: functions=$(find functions -maxdepth 1 -mindepth 1 -type d -print | jq -R . | jq -s . ) >> $GITHUB_OUTPUT
+        run: echo "functions=$(find functions -maxdepth 1 -mindepth 1 -type d -print | jq -R . | jq -s . )" >> $GITHUB_OUTPUT
       # - uses: dorny/paths-filter@v3
       #   id: detect
       #   with:
       #     filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
       #     base: main
       - name: Echo working directory
-        run: echo ${{ steps.detect.outputs.changes }}
+        run: echo ${{ steps.detect.outputs.functions }}
   package:
     runs-on: ubuntu-latest
     needs: changes
