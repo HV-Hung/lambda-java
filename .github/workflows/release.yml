@@ -24,25 +24,17 @@ env:
   FUNCTIONS_DIR: functions
 
 jobs:
-  prepare:
+  working-directories:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    name: Prepare working directories and secrets
+    name: Detect working directories
     outputs:
       working-dir: ${{ steps.detect.outputs.working_dir }}
-      gh-token: ${{ steps.token.outputs.gh_token }}
     steps:
-      - name: "Vault Secrets"
-        run: echo "GIT_HUB_API_TOKEN=${{ secrets.GIT_HUB_API_TOKEN }}" >> $GITHUB_ENV
-      
-      - name: Output Github token
-        id: token
-        run: echo "gh_token=${GIT_HUB_API_TOKEN}" >> $GITHUB_OUTPUT
-
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Output function list
+      - name: Detect functions directories
         id: detect
         run: |
           working_dir=$(find $FUNCTIONS_DIR -maxdepth 1 -mindepth 1 -type d -print | cut -d'/' -f2 | jq -R . | jq -s . )
@@ -58,7 +50,8 @@ jobs:
       max-parallel: 1
   
     steps:
-     
+      - name: "Vault Secrets"
+        run: echo "GIT_HUB_API_TOKEN=${{ secrets.GIT_HUB_API_TOKEN }}" >> $GITHUB_ENV
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -115,6 +108,7 @@ jobs:
         uses: sersoft-gmbh/setup-gh-cli-action@v2
         with:
           version: stable
+          github-token: ${{ secrets.GITHUB_TOKEN}}
       
       - name: Release tag
         run: |
@@ -124,7 +118,7 @@ jobs:
       - name: Upload release access
         working-directory: ${{ env.WORK_DIR }}
         env:
-          GH_TOKEN: ${{ needs.prepare.outputs.gh-token }}
+          GH_TOKEN: ${{ env.GIT_HUB_API_TOKEN }}
         run: |
           gh release upload ${{ env.RELEASE }} target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar 
 
