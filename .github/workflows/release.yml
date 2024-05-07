@@ -1,7 +1,6 @@
 name: Release
 
 on:
-  push:
   release:
     types: [created]
     secrets:
@@ -19,27 +18,27 @@ on:
         required: true
 
 jobs:
-  working-directories:
-    name: Working directories
-    uses: ./.github/workflows/work-directory.yml
+  detect-functions:
+    name: Detect functions directories
+    uses: ./.github/workflows/detect-functions.yml
     with:
       runs-on-runner: ubuntu-latest
       jobs-timeout-minutes: 20
-      functions-dir: functions
+      working-directory: functions
   package:
-    name: Package
+    name: Package functions
     uses: ./.github/workflows/package.yml
-    needs: working-directories
+    needs: detect-functions
     secrets: inherit
     permissions:
       id-token: write
       contents: read
     strategy:
       matrix:
-        working-directory: ${{ fromJSON(needs.working-directories.outputs.all-functions) }}
+        function: ${{ fromJSON(needs.detect-functions.outputs.all-functions) }}
       max-parallel: 1
     with:
       jobs-timeout-minutes: 30
       runs-on-runner: ubuntu-latest
-      working-directory: ${{ matrix.working-directory }}
-      functions-dir: functions
+      function: ${{ matrix.function }}
+      working-directory: functions

@@ -1,16 +1,28 @@
-filter=""
-work_dirs="["
+# Define the base directory
+working_dirs=functions
 
-for dir in $(find functions -mindepth 1 -maxdepth 1 -type d); do
-  dir=${dir#functions/}
+# Initialize empty strings for functionMapping and functionList
+functionMapping=""
+functionList="["
+
+# Loop over all directories under the base directory
+for directory in $(find $working_dirs -mindepth 1 -maxdepth 1 -type d); do
+  # Remove the base directory prefix from the directory name
+  directory=${directory#$working_dirs/}
   
-  filter+="\"$dir\":\"functions/$dir/**\","
-  work_dirs+="\"$dir\","
+  # Append to the functionMapping string in the format "directory":"base_directory/directory/**"
+  functionMapping+="\"$directory\":\"$working_dirs/$directory/**\","
+  
+  # Append to the functionList string
+  functionList+="\"$directory\","
 done
 
-filter="{${filter%,}}"
+# Remove the trailing comma from the functionMapping string and wrap it in braces
+functionMapping="{${functionMapping%,}}"
 
-work_dirs="${work_dirs%,}]"
+# Remove the trailing comma from the functionList string and close the bracket
+functionList="${functionList%,}]"
 
-echo $filter
-echo $work_dirs
+# Print the functionMapping string and functionList
+echo $functionMapping
+echo $functionList

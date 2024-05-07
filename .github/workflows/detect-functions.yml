@@ -1,0 +1,77 @@
+name: Work directory
+
+on:
+  workflow_call:
+    outputs:
+      all-functions:
+        description: "All functions directories"
+        value: ${{ jobs.function-directories.outputs.all-functions }}
+      changes:
+        description: "Changes in the repository"
+        value: ${{ jobs.function-directories.outputs.changes }}
+    inputs:
+      runs-on-runner:
+        description: "Runner where the pipeline will be executed"
+        required: false
+        type: string
+        default: ubuntu-latest
+      jobs-timeout-minutes:
+        description: "The maximum number of minutes to let a job run before GitHub automatically cancels it"
+        required: false
+        type: number
+        default: 20
+      working-directory:
+        description: "Directory where the functions are located"
+        required: false
+        type: string
+        default: functions
+
+jobs:
+  function-directories:
+    name: Detect function directories
+    runs-on: ${{ inputs.runs-on-runner }}
+    timeout-minutes: ${{ inputs.jobs-timeout-minutes }}
+    outputs:
+      all-functions: ${{ steps.detect.outputs.working-dirs }}
+      changes: ${{ steps.changes.outputs.changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Detect functions directories
+        id: detect
+        run: |
+          # Define the base directory
+          working_dirs=${{ inputs.working-directory }}
+
+          # Initialize empty strings for functionMapping and functionList
+          functionMapping=""
+          functionList="["
+
+          # Loop over all directories under the base directory
+          for directory in $(find $working_dirs -mindepth 1 -maxdepth 1 -type d); do
+            # Remove the base directory prefix from the directory name
+            directory=${directory#$working_dirs/}
+            
+            # Append to the functionMapping string in the format "directory":"base_directory/directory/**"
+            functionMapping+="\"$directory\":\"$working_dirs/$directory/**\","
+            
+            # Append to the functionList string
+            functionList+="\"$directory\","
+          done
+
+          # Remove the trailing comma from the functionMapping string and wrap it in braces
+          functionMapping="{${functionMapping%,}}"
+
+          # Remove the trailing comma from the functionList string and close the bracket
+          functionList="${functionList%,}]"
+
+          echo filter=$functionMapping >> $GITHUB_OUTPUT
+          echo working-dirs=$functionList >> $GITHUB_OUTPUT
+
+      - name: Detect changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: ${{ steps.detect.outputs.filter }}
+          base: main
