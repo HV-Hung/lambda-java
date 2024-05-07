@@ -43,7 +43,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: prepare
+    needs: working-directories
     strategy:
       matrix:
         working-directory: ${{ fromJSON(needs.working-directories.outputs.working-dir) }}
