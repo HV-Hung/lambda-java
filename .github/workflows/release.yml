@@ -17,27 +17,15 @@ on:
       VAULT_ROLE_SECRET:
         description: "Vault secret id"
         required: true
-    
-env:
-  FUNCTIONS_DIR: functions
 
 jobs:
   working-directories:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    name: Detect working directories
-    outputs:
-      working-dir: ${{ steps.detect.outputs.working_dir }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Detect functions directories
-        id: detect
-        run: |
-          working_dir=$(find $FUNCTIONS_DIR -maxdepth 1 -mindepth 1 -type d -print | cut -d'/' -f2 | jq -R . | jq -s . )
-          echo working_dir=$working_dir >> $GITHUB_OUTPUT
-
+    name: Working directories
+    uses: ./.github/workflows/work-directory.yml
+    with:
+      runs-on-runner: ubuntu-latest
+      jobs-timeout-minutes: 20
+      functions-dir: functions
   package:
     name: Package
     uses: ./.github/workflows/package.yml
@@ -48,9 +36,10 @@ jobs:
       contents: read
     strategy:
       matrix:
-        working-directory: ${{ fromJSON(needs.working-directories.outputs.working-dir) }}
+        working-directory: ${{ fromJSON(needs.working-directories.outputs.all-functions) }}
       max-parallel: 1
     with:
       jobs-timeout-minutes: 30
       runs-on-runner: ubuntu-latest
       working-directory: ${{ matrix.working-directory }}
+      functions-dir: functions

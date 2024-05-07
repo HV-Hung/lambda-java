@@ -12,22 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     name: detect-changes
     outputs:
-      # working-dir: ${{ steps.detect.outputs.changes }}
-      working-dir: ${{ steps.detect.outputs.functions }}
+      working-dir: ${{ steps.detect.outputs.changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       
       - name: Output function list
         id: detect
-        run: |
-          functions_dirs=$(find $FUNCTIONS_DIR -maxdepth 1 -mindepth 1 -type d -print | cut -d'/' -f2 | jq -R . | jq -s . )
-          echo functions=$functions_dirs >> $GITHUB_OUTPUT
-      # - uses: dorny/paths-filter@v3
-      #   id: detect
-      #   with:
-      #     filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
-      #     base: main
+        uses: dorny/paths-filter@v3
+        with:
+          filters: "{\"hello-world\":\"functions/hello-world/**\",\"hello-world-2\":\"functions/hello-world-2/**\"}"
+          base: main
       - name: Echo working directory
         run: echo ${{ steps.detect.outputs.functions }}
   package:
