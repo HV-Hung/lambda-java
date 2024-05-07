@@ -27,6 +27,11 @@ on:
         description: "Working directory"
         required: true
         type: string
+      release:
+        description: "Set true to publish the access to the release"
+        required: false
+        type: boolean
+        default: false
 
     secrets:
       VAULT_ADDR:
@@ -54,9 +59,6 @@ jobs:
       contents: read
   
     steps:
-      - name: "Vault Secrets"
-        run: echo "GIT_HUB_API_TOKEN=${{ secrets.GIT_HUB_API_TOKEN }}" >> $GITHUB_ENV
-      
       - name: "Install tools"
         shell: bash
         run: |
@@ -82,7 +84,7 @@ jobs:
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
       
-          RELEASE=$(echo ${{ github.ref }} | cut -d'/' -f3)
+          RELEASE=$(echo ${{ github.ref }} | cut -d'/' -f3 || echo "")
           echo "RELEASE=${RELEASE}" >> $GITHUB_ENV
 
       - name: Set up JDK 17
@@ -119,7 +121,12 @@ jobs:
           version: stable
           github-token: ${{ secrets.GITHUB_TOKEN}}
       
+      - name: "Vault Secrets"
+        if: ${{ inputs.release == 'true' }}
+        run: echo "GIT_HUB_API_TOKEN=${{ secrets.GIT_HUB_API_TOKEN }}" >> $GITHUB_ENV
+      
       - name: Upload release access
+        if: ${{ inputs.release == 'true' }}
         working-directory: ${{ env.WORK_DIR }}
         env:
           GH_TOKEN: ${{ env.GIT_HUB_API_TOKEN }}

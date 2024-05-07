@@ -3,19 +3,6 @@ name: Release
 on:
   release:
     types: [created]
-    secrets:
-      VAULT_ADDR:
-        description: "Vault address"
-        required: true
-      VAULT_NAMESPACE:
-        description: "Vault namespace"
-        required: true
-      VAULT_ROLE_ID:
-        description: "Vault role id"
-        required: true
-      VAULT_ROLE_SECRET:
-        description: "Vault secret id"
-        required: true
 
 jobs:
   detect-functions:
@@ -42,3 +29,4 @@ jobs:
       runs-on-runner: ubuntu-latest
       function: ${{ matrix.function }}
       working-directory: functions
+      release: true
