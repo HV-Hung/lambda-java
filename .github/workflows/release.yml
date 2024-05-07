@@ -43,6 +43,9 @@ jobs:
     uses: ./.github/workflows/package.yml
     needs: working-directories
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     strategy:
       matrix:
         working-directory: ${{ fromJSON(needs.working-directories.outputs.working-dir) }}
