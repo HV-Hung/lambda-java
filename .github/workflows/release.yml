@@ -19,14 +19,13 @@ on:
         required: true
     
 env:
-  RUNNER: ubuntu-latest
   JDK_VERSION: 17
   JOB_TIMEOUT_MINUTES: 30
   FUNCTIONS_DIR: functions
 
 jobs:
   prepare:
-    runs-on: ${{ env.RUNNER }}
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     name: Prepare working directories and secrets
     outputs:
