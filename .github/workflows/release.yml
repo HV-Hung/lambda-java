@@ -49,7 +49,7 @@ jobs:
           echo working_dir=$working_dir >> $GITHUB_OUTPUT
 
   package:
-    runs-on: ${{ env.RUNNER }}
+    runs-on: ubuntu-latest
     timeout-minutes: ${{ env.JOB_TIMEOUT_MINUTES }}
     needs: prepare
     strategy:
