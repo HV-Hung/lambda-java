@@ -3,8 +3,8 @@ name: Work directory
 on:
   workflow_call:
     outputs:
-      all-functions: ${{ steps.work-directory.outputs.all-functions }}
-      changes: ${{ steps.work-directory.outputs.changes }}
+      all-functions: ${{ jobs.work-directory.outputs.all-functions }}
+      changes: ${{ jobs.work-directory.outputs.changes }}
     inputs:
       runs-on-runner:
         description: "Runner where the pipeline will be executed"
