@@ -3,72 +3,110 @@ name: Release
 on:
   release:
     types: [created]
+
+    secrets:
+      VAULT_ADDR:
+        description: "Vault address"
+        required: true
+      VAULT_NAMESPACE:
+        description: "Vault namespace"
+        required: true
+      VAULT_ROLE_ID:
+        description: "Vault role id"
+        required: true
+      VAULT_ROLE_SECRET:
+        description: "Vault secret id"
+        required: true
     
-  workflow_dispatch:
 env:
+  RUNNER: ubuntu-latest
+  JDK_VERSION: 17
+  JOB_TIMEOUT_MINUTES: 30
   FUNCTIONS_DIR: functions
+
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    name: detect-changes
+  prepare:
+    runs-on: ${{ env.RUNNER }}
+    timeout-minutes: 5
+    name: Prepare working directories and secrets
     outputs:
-      working-dir: ${{ steps.detect.outputs.functions }}
+      working-dir: ${{ steps.detect.outputs.working_dir }}
+      gh-token: ${{ steps.token.outputs.gh_token }}
     steps:
+      - name: "Vault Secrets"
+        run: echo "GIT_HUB_API_TOKEN=${{ secrets.GIT_HUB_API_TOKEN }}" >> $GITHUB_ENV
+      
+      - name: Output Github token
+        id: token
+        run: echo "gh_token=${{ env.GIT_HUB_API_TOKEN }}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
       
       - name: Output function list
         id: detect
         run: |
-          functions_dirs=$(find $FUNCTIONS_DIR -maxdepth 1 -mindepth 1 -type d -print | cut -d'/' -f2 | jq -R . | jq -s . )
-          echo functions=$functions_dirs >> $GITHUB_OUTPUT
-      
-      - name: Echo working directory
-        run: echo ${{ steps.detect.outputs.functions }}
+          working_dir=$(find $FUNCTIONS_DIR -maxdepth 1 -mindepth 1 -type d -print | cut -d'/' -f2 | jq -R . | jq -s . )
+          echo working_dir=$working_dir >> $GITHUB_OUTPUT
+
   package:
-    runs-on: ubuntu-latest
-    needs: changes
+    runs-on: ${{ env.RUNNER }}
+    timeout-minutes: ${{ env.JOB_TIMEOUT_MINUTES }}
+    needs: prepare
     strategy:
       matrix:
-        working-directory: ${{ fromJSON(needs.changes.outputs.working-dir) }}
+        working-directory: ${{ fromJSON(needs.prepare.outputs.working-dir) }}
       max-parallel: 1
   
     steps:
+     
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: "Install tools"
         shell: bash
         run: |
           pip install --no-cache-dir --upgrade --quiet jq yq
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
+
       - name: Set up working directory
         run: |
           WORK_DIR="${{ env.FUNCTIONS_DIR }}/${{ matrix.working-directory }}"
           echo "WORK_DIR=${WORK_DIR}" >> $GITHUB_ENV
-
+      
       - name: Version
         run: |
           cd $WORK_DIR
+
+          if [ ! -f pom.xml ]; then
+              echo "File not found!"
+              exit 1
+          fi
+
           VERSION=$([[ -f "pom.xml" ]] && xq -r -e '.project.version // empty' pom.xml | sed s/"-SNAPSHOT"// || echo "")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          
-      - name: Echo info
-        run: |
-          echo $VERSION
-          echo $WORK_DIR
       
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'zulu'
+          java-version: ${{ env.JDK_VERSION }}
+          distribution: adopt
 
-      - name: Cache Maven packages
+      - name: "Maven Setup"
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.5
+
+      - name: "Maven Home Setup"
+        run: |
+          echo "M2_HOME=/opt/hostedtoolcache/maven/3.8.5/x64" >> $GITHUB_ENV
+          echo "MAVEN_OPTS=-XshowSettings:vm -XX:+UseContainerSupport -XX:MaxRAMPercentage=90 -Dnetworkaddress.cache.ttl=1 -Djava.security.egd=file:/dev/./urandom" >> $GITHUB_ENV
+
+      - name: "Maven Cache of ~/.m2/repository"
         uses: actions/cache@v4
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          key: ${{ runner.os }}-maven
+          path: ~/.m2/repository
 
       - name: Build with Maven
         working-directory: ${{ env.WORK_DIR }}
@@ -79,7 +117,7 @@ jobs:
         with:
           version: stable
       
-      - name: Release
+      - name: Release tag
         run: |
           RELEASE=$(echo ${{ github.ref }} | cut -d'/' -f3)
           echo "RELEASE=${RELEASE}" >> $GITHUB_ENV
@@ -87,7 +125,7 @@ jobs:
       - name: Upload release access
         working-directory: ${{ env.WORK_DIR }}
         env:
-          GH_TOKEN: ${{ secrets.GIT_HUB_API_TOKEN }}
+          GH_TOKEN: ${{ needs.prepare.outputs.gh-token }}
         run: |
           gh release upload ${{ env.RELEASE }} target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar 
 
