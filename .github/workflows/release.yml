@@ -37,7 +37,7 @@ jobs:
       
       - name: Output Github token
         id: token
-        run: echo "gh_token=${GIT_HUB_API_TOKEN}" >> $GITHUB_ENV
+        run: echo "gh_token=${GIT_HUB_API_TOKEN}" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4
