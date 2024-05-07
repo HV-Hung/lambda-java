@@ -46,7 +46,7 @@ jobs:
     needs: prepare
     strategy:
       matrix:
-        working-directory: ${{ fromJSON(needs.prepare.outputs.working-dir) }}
+        working-directory: ${{ fromJSON(needs.working-directories.outputs.working-dir) }}
       max-parallel: 1
   
     steps:
