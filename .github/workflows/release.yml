@@ -48,8 +48,6 @@ jobs:
         working-directory: ${{ fromJSON(needs.working-directories.outputs.working-dir) }}
       max-parallel: 1
     with:
-      functions-dir: ${{ env.FUNCTIONS_DIR }}
       jobs-timeout-minutes: 30
       runs-on-runner: ubuntu-latest
-
-  
+      working-directory: ${{ matrix.working-directory }}

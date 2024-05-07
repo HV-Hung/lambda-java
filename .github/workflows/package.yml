@@ -23,6 +23,10 @@ on:
         required: false
         type: string
         default: functions
+      working-directory:
+        description: "Working directory"
+        required: true
+        type: string
 
     secrets:
       VAULT_ADDR:
@@ -62,7 +66,7 @@ jobs:
 
       - name: Set up working directory
         run: |
-          WORK_DIR="${{ inputs.functions-dir }}/${{ matrix.working-directory }}"
+          WORK_DIR="${{ inputs.functions-dir }}/${{ inputs.working-directory }}"
           echo "WORK_DIR=${WORK_DIR}" >> $GITHUB_ENV
       
       - name: Version
@@ -106,7 +110,7 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         run: |
           mvn package
-          mv target/${{ matrix.working-directory }}-${{ env.VERSION }}.jar target/${{ matrix.working-directory }}-${{ env.RELEASE }}.jar
+          mv target/${{ inputs.working-directory }}-${{ env.VERSION }}.jar target/${{ inputs.working-directory }}-${{ env.RELEASE }}.jar
 
       - name: "GitHub CLI Setup"
         uses: sersoft-gmbh/setup-gh-cli-action@v2
@@ -119,12 +123,12 @@ jobs:
         env:
           GH_TOKEN: ${{ env.GIT_HUB_API_TOKEN }}
         run: |
-          gh release upload ${{ env.RELEASE }} target/${{ matrix.working-directory }}-${{ env.RELEASE }}.jar 
+          gh release upload ${{ env.RELEASE }} target/${{ inputs.working-directory }}-${{ env.RELEASE }}.jar 
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.working-directory }}
+          name: ${{ inputs.working-directory }}
           path: |
-            ${{ env.WORK_DIR }}/target/${{ matrix.working-directory }}-${{ env.RELEASE }}.jar
+            ${{ env.WORK_DIR }}/target/${{ inputs.working-directory }}-${{ env.RELEASE }}.jar
 
